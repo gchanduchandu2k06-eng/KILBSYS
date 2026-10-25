@@ -42,6 +42,16 @@ SURVER_URL = "http://127.0.0.1:8001"
 # Core routes
 # ---------------------------------------------------------------------------
 
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "VerilogLab / KILBSYS Backend API",
+        "health": "/api/health",
+        "docs": "/docs"
+    }
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}

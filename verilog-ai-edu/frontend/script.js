@@ -909,7 +909,7 @@ endmodule
     (typeof localStorage !== "undefined" && localStorage.getItem("kilbsys_api_base")) ||
     (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
       ? "http://127.0.0.1:8000"
-      : "http://127.0.0.1:8000");
+      : "https://kilbsys-1.onrender.com");
   window.API_BASE = API_BASE;
 
 

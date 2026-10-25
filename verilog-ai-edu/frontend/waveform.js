@@ -287,7 +287,8 @@ function drawWaveform() {
 function loadWaveform(url) {
   waveformMessage.textContent = "Loading waveform...";
 
-  const baseUrl = (window.API_BASE || "http://127.0.0.1:8000").replace(/\/$/, "");
+  const defaultBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "http://127.0.0.1:8000" : "https://kilbsys-1.onrender.com";
+  const baseUrl = (window.API_BASE || defaultBase).replace(/\/$/, "");
   fetch(baseUrl + url)
     .then(function(response) {
       if (!response.ok) throw new Error("Waveform request failed");
