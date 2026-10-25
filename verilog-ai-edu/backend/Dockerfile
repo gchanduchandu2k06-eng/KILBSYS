@@ -1,7 +1,8 @@
 FROM python:3.11-slim
 
-# Install system dependencies including Verilator, C++ compiler and make
+# Install system dependencies: Icarus Verilog (for sub-second simulation), Verilator (linting), C++ compiler and make
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    iverilog \
     verilator \
     build-essential \
     make \

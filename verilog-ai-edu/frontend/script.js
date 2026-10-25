@@ -1095,10 +1095,10 @@ endmodule
         {
           severity: "error",
           line: 0,
-          message: "Could not connect to FastAPI server at http://127.0.0.1:8000. Please ensure the backend is running."
+          message: `Could not connect to FastAPI server at ${API_BASE}. Please ensure the backend is running.`
         }
       ]);
-      appendTerminalLog("ERROR: Connection to backend failed.");
+      appendTerminalLog(`ERROR: Connection to backend failed at ${API_BASE}.`);
     }
   }
 
@@ -1188,7 +1188,10 @@ endmodule
           }
 
           // Fetch VCD for Canvas fallback
-          fetch(result.waveform_url)
+          const vcdFetchUrl = result.waveform_url.startsWith("http")
+            ? result.waveform_url.replace("http://127.0.0.1:8000", API_BASE)
+            : `${API_BASE}${result.waveform_url.startsWith('/') ? '' : '/'}${result.waveform_url}`;
+          fetch(vcdFetchUrl)
             .then((r) => {
               if (!r.ok) throw new Error("HTTP " + r.status);
               return r.text();
@@ -1283,7 +1286,7 @@ endmodule
     } catch (err) {
       statusSimulationText.textContent = "Simulation: Network Error";
       statusSystemState.textContent = "Backend Unreachable";
-      appendTerminalLog("ERROR: Could not communicate with simulation server at port 8000.");
+      appendTerminalLog(`ERROR: Could not communicate with simulation server at ${API_BASE}.`);
     }
   }
 
