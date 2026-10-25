@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VerilogLab — Professional Browser EDA</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
+  />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/verilog/verilog.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Application Toolbar -->
+  <header id="app-topbar">
+    <div class="topbar-left">
+      <button id="btn-toggle-left-sidebar" class="toolbar-btn icon-only" title="Toggle Projects Sidebar (Ctrl+B)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+        </svg>
+      </button>
+
+      <div class="brand-badge">
+        <span class="brand-icon">⌁</span>
+        <span>VerilogLab</span>
+        <span class="brand-tag">EDA</span>
+      </div>
+
+      <div class="active-project-pill" id="active-project-pill" title="Current Active Project">
+        <span class="dot"></span>
+        <span id="current-project-label">D Flip-Flop</span>
+        <span class="unsaved-dot" id="unsaved-indicator" title="Unsaved changes"></span>
+      </div>
+    </div>
+
+    <div class="topbar-center">
+      <select id="language-select" class="topbar-select" title="Target HDL Standard">
+        <option value="verilog">Verilog (IEEE 1364)</option>
+        <option value="systemverilog" selected>SystemVerilog (IEEE 1800)</option>
+      </select>
+
+      <div class="view-mode-tabs" role="tablist">
+        <button id="btn-view-rtl" class="view-tab-btn" role="tab" title="Show RTL Editor only">RTL</button>
+        <button id="btn-view-testbench" class="view-tab-btn" role="tab" title="Show Testbench Editor only">Testbench</button>
+        <button id="btn-view-split" class="view-tab-btn active" role="tab" title="Show Split View (Side-by-side)">Split View</button>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <button id="btn-check-rtl" class="toolbar-btn" title="Lint and Validate RTL with Verilator (Ctrl+Enter)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Check RTL
+      </button>
+
+      <button id="btn-run-sim" class="toolbar-btn primary" title="Compile and Run Simulation with Waveforms (Shift+Enter)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Run Simulation
+      </button>
+
+      <button id="btn-toggle-output" class="toolbar-btn active" title="Toggle Simulation / Output Dock (Ctrl+J)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        Output
+      </button>
+
+      <button id="btn-toggle-ai" class="toolbar-btn" title="Toggle KILBSYS AI Panel">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+        </svg>
+        KILBSYS AI
+      </button>
+
+      <button id="btn-theme-toggle" class="toolbar-btn icon-only" title="Switch Theme (Dark / Light)">
+        <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main IDE Workspace Container -->
+  <div id="ide-layout">
+    
+    <!-- Left Sidebar: Projects and Conversation History (ChatGPT-Style) -->
+    <aside id="left-sidebar" aria-label="Projects and History">
+      <div class="sidebar-header">
+        <button id="btn-new-project" class="btn-new-project">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          New Project
+        </button>
+
+        <div class="sidebar-search-box">
+          <span class="sidebar-search-icon">🔍</span>
+          <input type="text" id="sidebar-search" placeholder="Search projects & history..." />
+        </div>
+      </div>
+
+      <div class="sidebar-body">
+        <div>
+          <div class="sidebar-section-title">
+            <span>Projects</span>
+            <span id="project-count" style="font-size: 10px; opacity: 0.6;">(2)</span>
+          </div>
+          <ul id="project-list" class="sidebar-list">
+            <!-- Dynamically populated from localStorage -->
+          </ul>
+        </div>
+
+        <div>
+          <div class="sidebar-section-title">
+            <span>Recent Sessions</span>
+          </div>
+          <ul id="history-list" class="sidebar-list">
+            <!-- Dynamically populated from simulation history -->
+          </ul>
+        </div>
+
+        <div>
+          <div class="sidebar-section-title">
+            <span>Quick Templates</span>
+          </div>
+          <ul id="template-quick-list" class="sidebar-list">
+            <li class="sidebar-item" data-template="half_adder">
+              <div class="sidebar-item-content">
+                <span class="sidebar-item-icon">➕</span>
+                <span>Half Adder</span>
+              </div>
+              <span class="sidebar-item-tag">Verilog</span>
+            </li>
+            <li class="sidebar-item" data-template="dff">
+              <div class="sidebar-item-content">
+                <span class="sidebar-item-icon">⚡</span>
+                <span>D Flip-Flop</span>
+              </div>
+              <span class="sidebar-item-tag">Verilog</span>
+            </li>
+            <li class="sidebar-item" data-template="counter">
+              <div class="sidebar-item-content">
+                <span class="sidebar-item-icon">⏱</span>
+                <span>4-Bit Counter</span>
+              </div>
+              <span class="sidebar-item-tag">Verilog</span>
+            </li>
+            <li class="sidebar-item" data-template="and_gate">
+              <div class="sidebar-item-content">
+                <span class="sidebar-item-icon">🔌</span>
+                <span>AND Gate</span>
+              </div>
+              <span class="sidebar-item-tag">Verilog</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Workspace: Editors and Output Dock -->
+    <main id="main-workspace">
+      
+      <!-- Workspace Toolbar -->
+      <div class="workspace-header">
+        <div class="view-mode-indicator" id="workspace-active-title" style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+          <span>RTL & Testbench Workspace</span>
+        </div>
+
+        <div class="workspace-actions">
+          <button id="btn-save-project" class="toolbar-btn" title="Save Project (Ctrl+S)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save
+          </button>
+          
+          <button id="btn-copy-code" class="toolbar-btn" title="Copy Current Code to Clipboard">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <!-- CodeMirror Editors Container -->
+      <div id="editors-container" class="split-mode">
+        
+        <!-- RTL Editor Pane -->
+        <div id="rtl-pane" class="editor-pane">
+          <div class="editor-pane-header">
+            <div class="file-title">
+              <span>📄 RTL Source</span>
+              <span class="file-badge" id="rtl-file-badge">design.v</span>
+            </div>
+          </div>
+          <div class="editor-wrapper">
+            <textarea id="rtl-code">module dff (
+  input wire clk,
+  input wire reset,
+  input wire d,
+  output reg q
+);
+
+always @(posedge clk or posedge reset) begin
+  if (reset)
+    q <= 1'b0;
+  else
+    q <= d;
+end
+
+endmodule
+</textarea>
+          </div>
+        </div>
+
+        <!-- Testbench Editor Pane -->
+        <div id="testbench-pane" class="editor-pane">
+          <div class="editor-pane-header">
+            <div class="file-title">
+              <span>🧪 Testbench</span>
+              <span class="file-badge" id="tb-file-badge">testbench.v</span>
+            </div>
+          </div>
+          <div class="editor-wrapper">
+            <textarea id="testbench-code">module tb;
+
+reg clk;
+reg reset;
+reg d;
+wire q;
+
+dff uut (
+  .clk(clk),
+  .reset(reset),
+  .d(d),
+  .q(q)
+);
+
+initial begin
+  $dumpfile("waveform.vcd");
+  $dumpvars(0, tb);
+end
+
+initial begin
+  clk = 0;
+  forever #5 clk = ~clk;
+end
+
+initial begin
+  reset = 1;
+  d = 0;
+  #10 reset = 0;
+  #5 d = 1;
+  #10 d = 0;
+  #10 d = 1;
+  #10 d = 0;
+  #20 $finish;
+end
+
+endmodule
+</textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Simulation and Output Dock (Open by Default) -->
+      <div id="output-dock" aria-label="Simulation Output Dock">
+        <div id="dock-resizer" class="dock-resizer" title="Drag to resize output dock"></div>
+        <div class="dock-header">
+          <div class="dock-tabs" role="tablist">
+            <button id="dock-tab-diagnostics" class="dock-tab-btn active" role="tab">
+              <span>Diagnostics</span>
+              <span id="dock-diag-badge" class="dock-badge">0</span>
+            </button>
+            <button id="dock-tab-terminal" class="dock-tab-btn" role="tab">
+              <span>Terminal / Logs</span>
+            </button>
+            <button id="dock-tab-waveform" class="dock-tab-btn" role="tab">
+              <span>Waveforms</span>
+            </button>
+            <button id="dock-tab-results" class="dock-tab-btn" role="tab">
+              <span>Test Results</span>
+            </button>
+          </div>
+
+          <div class="dock-actions">
+            <button id="btn-clear-dock" class="toolbar-btn icon-only" title="Clear Console / Output">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+            </button>
+            <button id="btn-toggle-dock-size" class="toolbar-btn icon-only" title="Collapse / Expand Dock">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="dock-body">
+          <!-- Diagnostics Panel -->
+          <div id="dock-panel-diagnostics" class="dock-panel active">
+            <div id="diagnostics-container" class="diagnostics-list">
+              <div class="diagnostic-card success">
+                <span class="diag-loc">System</span>
+                <span class="diag-msg">Ready. Click 'Check RTL' or 'Run Simulation' to inspect your hardware design.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminal Panel -->
+          <div id="dock-panel-terminal" class="dock-panel">
+            <pre id="terminal-output" class="terminal-window">VerilogLab EDA Environment Initialized.
+Connected to Verilator / Icarus Verilog execution pipeline.
+Click 'Check RTL' to compile or 'Run Simulation' to run testbenches.</pre>
+          </div>
+
+          <!-- Waveform Panel -->
+          <div id="dock-panel-waveform" class="dock-panel">
+            <div class="waveform-dock-content">
+              <div class="waveform-toolbar">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button id="btn-switch-viewer" class="toolbar-btn" style="font-size: 11px;">
+                    Switch to Canvas Viewer
+                  </button>
+                  <a id="vcd-download-link" class="toolbar-btn" style="font-size: 11px; text-decoration: none;" download="waveform.vcd" target="_blank">
+                    Download .VCD
+                  </a>
+                </div>
+
+                <!-- Canvas Waveform Controls (Visible when in Canvas Mode) -->
+                <div id="canvas-controls-group" style="display: none; align-items: center; gap: 6px;">
+                  <button id="wave-zoom-in" class="toolbar-btn" title="Zoom In">+</button>
+                  <button id="wave-zoom-out" class="toolbar-btn" title="Zoom Out">-</button>
+                  <button id="wave-pan-left" class="toolbar-btn" title="Pan Left">&larr;</button>
+                  <button id="wave-pan-right" class="toolbar-btn" title="Pan Right">&rarr;</button>
+                  <button id="wave-fit" class="toolbar-btn" title="Fit Waveform">Fit</button>
+                  <select id="wave-radix" class="topbar-select" style="height: 26px; font-size: 11px;">
+                    <option value="bin">Binary</option>
+                    <option value="hex">Hex</option>
+                    <option value="dec">Decimal</option>
+                  </select>
+                  <span id="waveform-cursor-time" style="font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary);"></span>
+                </div>
+              </div>
+
+              <!-- Waveform Empty State -->
+              <div id="waveform-empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-secondary); padding: 24px;">
+                <p style="font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary);">No Waveform Available</p>
+                <p style="font-size: 12px; max-width: 480px; line-height: 1.5;">Execute a testbench simulation to inspect signal transitions. If using custom testbench code, ensure it calls <code>$dumpfile</code> and <code>$dumpvars</code>.</p>
+              </div>
+
+              <!-- Surfer WASM Viewer -->
+              <div id="surfer-frame-wrap" class="waveform-viewer-wrap" style="display: none;">
+                <iframe id="surfer-frame" src="about:blank" title="Surfer WASM Waveform Viewer"></iframe>
+              </div>
+
+              <!-- Canvas Fallback Viewer -->
+              <div id="waveform-canvas-view" style="display: none;">
+                <div id="waveform-message" style="font-size: 12px; color: var(--text-secondary);">Waveform ready. Click on canvas to inspect signals.</div>
+                <div id="waveform-signals" style="font-size: 12px; font-family: var(--font-mono); color: var(--text-primary);"></div>
+                <canvas id="waveform-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Results Panel -->
+          <div id="dock-panel-results" class="dock-panel">
+            <div id="results-summary" style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="diagnostic-card" id="results-status-card">
+                <span class="diag-loc">Testbench</span>
+                <span class="diag-msg" id="results-status-text">No simulation test has been executed in this session.</span>
+              </div>
+              <pre id="results-log-text" class="terminal-window" style="height: 120px;">Run a simulation to view detailed test assertions and cycle results.</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Right Sidebar: KILBSYS AI — Automated RTL Verification & Debugging -->
+    <aside id="ai-sidebar" aria-label="KILBSYS AI Digital Design Assistant">
+      <div class="ai-header">
+        <div class="ai-title-wrap">
+          <!-- Logo slot: populated with official PNG when supplied by client -->
+          <img id="kilbsys-logo" src="" alt="KILBSYS" aria-hidden="true"
+               style="display:none; height:18px; width:auto; object-fit:contain; flex-shrink:0;">
+          <span class="ai-title">KILBSYS AI</span>
+          <span class="ai-provider-badge" id="ai-status-badge">Checking...</span>
+        </div>
+        <button id="btn-close-ai" class="toolbar-btn icon-only" title="Close KILBSYS AI">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="ai-quick-actions">
+        <button id="chip-explain-code" class="ai-chip-btn" title="Explain the current RTL module">
+          💡 Explain Code
+        </button>
+        <button id="chip-diagnose-error" class="ai-chip-btn" title="Diagnose current diagnostics with AI">
+          🔍 Diagnose Error
+        </button>
+        <button id="chip-suggest-fix" class="ai-chip-btn" title="Ask AI to suggest a fix">
+          ⚡ Suggest Fix
+        </button>
+      </div>
+
+      <div class="ai-chat-history" id="ai-chat-history">
+        <div class="ai-message assistant" id="ai-welcome-message">
+          <div class="ai-message-header">
+            <span>KILBSYS AI</span>
+            <span id="ai-online-indicator">Initialising...</span>
+          </div>
+          <div id="ai-welcome-text">Hello! I am KILBSYS AI, your digital design assistant. Run <strong>Check RTL</strong> or <strong>Run Simulation</strong> and I will automatically analyse the results, explain errors, and propose verified corrections.</div>
+        </div>
+      </div>
+
+      <!-- Correction candidate panel (hidden until AI proposes a fix) -->
+      <div id="ai-correction-panel" class="ai-correction-panel" style="display:none;">
+        <div class="ai-correction-header">
+          <span>Proposed Correction</span>
+          <span id="ai-correction-status" class="ai-correction-badge"></span>
+        </div>
+        <div id="ai-correction-diff" class="ai-correction-diff"></div>
+        <div class="ai-correction-actions">
+          <button id="btn-apply-correction" class="toolbar-btn primary" title="Apply verified correction to editor">Apply &amp; Reopen</button>
+          <button id="btn-undo-correction" class="toolbar-btn" title="Undo applied correction" style="display:none;">Undo</button>
+          <button id="btn-dismiss-correction" class="toolbar-btn" title="Discard proposed correction">Dismiss</button>
+        </div>
+      </div>
+
+      <div class="ai-input-area">
+        <input type="text" id="ai-query-input" placeholder="Ask KILBSYS AI about your design..." aria-label="Ask KILBSYS AI" />
+        <button id="ai-send-btn" class="ai-send-btn" title="Send question (Enter)">Send</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Status Bar at Bottom -->
+  <footer id="app-statusbar">
+    <div class="statusbar-left">
+      <div class="status-indicator">
+        <span class="circle"></span>
+        <span id="status-system-state">Ready</span>
+      </div>
+      <span>|</span>
+      <span id="status-project-name">Project: D Flip-Flop</span>
+      <span>|</span>
+      <span id="status-view-mode">View: Split</span>
+    </div>
+
+    <div class="statusbar-right">
+      <div id="status-backend-pill" class="status-indicator">
+        <span class="circle"></span>
+        <span id="status-backend-text">Backend: Checking...</span>
+      </div>
+      <span>|</span>
+      <span id="status-validation-text">Validation: Idle</span>
+      <span>|</span>
+      <span id="status-simulation-text">Simulation: Idle</span>
+    </div>
+  </footer>
+
+  <!-- Modals -->
+  <!-- 1. New Project Modal Dialog -->
+  <div id="new-project-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="new-project-modal-title">
+    <div class="modal-card">
+      <h3 id="new-project-modal-title">Create New Digital Design Project</h3>
+      <p class="modal-desc">Configure your module name and language standard. Projects are automatically saved to your browser workspace.</p>
+      
+      <form id="new-project-form">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="new-project-name-input">Project / Module Name</label>
+          <input type="text" id="new-project-name-input" placeholder="e.g., alu_8bit, fifo_sync, uart_tx" required maxlength="80">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="new-project-filename-input">Source Filename (optional)</label>
+          <input type="text" id="new-project-filename-input" placeholder="auto-generated from module name if blank" maxlength="80">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="new-project-lang-select">Hardware Description Language</label>
+          <select id="new-project-lang-select">
+            <option value="verilog">Verilog (IEEE 1364-2005)</option>
+            <option value="systemverilog" selected>SystemVerilog (IEEE 1800-2017)</option>
+          </select>
+        </div>
+
+        <p id="new-project-error" class="form-error"></p>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-new-project" class="secondary">Cancel</button>
+          <button type="submit" id="btn-confirm-new-project" class="primary">Create Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Template Replace Confirmation Modal (Preserving Student Code) -->
+  <div id="template-confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-card">
+      <h3 id="confirm-modal-title">Replace existing RTL code?</h3>
+      <p class="modal-desc">
+        The editor already contains student-written code. Would you like to replace it with a starter template for module <strong id="confirm-module-name"></strong>, or keep your existing code?
+      </p>
+      <div class="modal-actions">
+        <button type="button" id="confirm-replace-btn" class="primary">Replace with Template</button>
+        <button type="button" id="confirm-keep-btn" class="secondary">Keep Current Code</button>
+        <button type="button" id="confirm-cancel-btn" class="secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Delete Project Confirmation Modal -->
+  <div id="delete-confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="modal-card">
+      <h3 id="delete-modal-title">Delete Project</h3>
+      <p class="modal-desc">
+        Are you sure you want to delete project <strong id="delete-project-name"></strong>? This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancel-delete" class="secondary">Cancel</button>
+        <button type="button" id="btn-confirm-delete" class="primary" style="background-color: var(--color-error); border-color: var(--color-error);">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="waveform.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

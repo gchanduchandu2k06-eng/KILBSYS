@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerilogLab — Learn Verilog with AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo">
+                <span class="logo-icon">⌁</span>
+                <span class="logo-text">Verilog<span>Lab</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#demo">Demo</a>
+                <a href="#pricing">Pricing</a>
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="btn-ghost">Log in</a>
+                <a href="#" class="btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="hero-content">
+                <div class="badge">
+                    <span class="pulse-dot"></span>
+                    AI-Powered Learning Platform
+                </div>
+                <h1>Master <span class="gradient-text">Verilog</span> with your personal AI tutor</h1>
+                <p class="hero-sub">Practice writing hardware description code in real-time. Get instant feedback, intelligent hints, and step-by-step guidance from an AI that understands digital logic.</p>
+                <div class="hero-actions">
+                    <a href="#demo" class="btn-primary btn-large">Start Practicing <span>→</span></a>
+                    <a href="#how-it-works" class="btn-outline btn-large">See How It Works</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <strong>500+</strong>
+                        <span>Verilog Exercises</span>
+                    </div>
+                    <div class="stat">
+                        <strong>10k+</strong>
+                        <span>Active Learners</span>
+                    </div>
+                    <div class="stat">
+                        <strong>4.9/5</strong>
+                        <span>Learner Rating</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="code-window">
+                    <div class="window-bar">
+                        <div class="dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="window-title">full_adder.v</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="code-line"><span class="ln">1</span><code><span class="kw">module</span> full_adder (</code></div>
+                        <div class="code-line"><span class="ln">2</span><code>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">input</span> a, b, cin,</code></div>
+                        <div class="code-line"><span class="ln">3</span><code>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">output</span> sum, cout</code></div>
+                        <div class="code-line"><span class="ln">4</span><code>);</code></div>
+                        <div class="code-line"><span class="ln">5</span><code>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">assign</span> sum = a ^ b ^ cin;</code></div>
+                        <div class="code-line"><span class="ln">6</span><code>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">assign</span> cout = (a &amp; b) | (cin &amp; (a ^ b));</code></div>
+                        <div class="code-line"><span class="ln">7</span><code><span class="kw">endmodule</span></code></div>
+                    </div>
+                    <div class="code-footer">
+                        <span class="status-ok">✓</span>
+                        <span>Simulation passed in 0.03s</span>
+                        <span class="ai-tag">AI Reviewed</span>
+                    </div>
+                </div>
+                <div class="floating-card card-1">
+                    <div class="card-icon">✦</div>
+                    <div>
+                        <strong>Great work!</strong>
+                        <p>Your logic is correct. Try optimizing the carry path.</p>
+                    </div>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="card-icon">⚡</div>
+                    <div>
+                        <strong>Hint available</strong>
+                        <p>De Morgan's law can simplify this expression.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <div class="eyebrow">Why VerilogLab</div>
+                <h2>Everything you need to become<br>a hardware design expert</h2>
+                <p>Learn Verilog the right way — by writing code, simulating circuits, and getting personalized AI guidance every step of the journey.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⌘</div>
+                    <h3>AI Code Assistant</h3>
+                    <p>Get instant, context-aware feedback on your Verilog code. The AI explains errors, suggests improvements, and answers your questions in plain language.</p>
+                    <a href="#" class="feature-link">Learn more <span>→</span></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">◈</div>
+                    <h3>Interactive Simulator</h3>
+                    <p>Write, compile, and simulate your designs right in the browser. Watch your circuits come to life with real-time waveform visualization.</p>
+                    <a href="#" class="feature-link">Learn more <span>→</span></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⌗</div>
+                    <h3>Structured Learning Path</h3>
+                    <p>Progress from basic gates to complex FSMs with carefully curated exercises that build on each other and match industry best practices.</p>
+                    <a href="#" class="feature-link">Learn more <span>→</span></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⌁</div>
+                    <h3>Personalized Hints</h3>
+                    <p>Stuck on a problem? Get hints that guide you toward the solution without giving it away, so you actually learn the underlying concepts.</p>
+                    <a href="#" class="feature-link">Learn more <span>→</span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <div class="eyebrow">How It Works</div>
+                <h2>From zero to FPGA-ready<br>in three simple steps</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">✎</div>
+                    <h3>Choose an Exercise</h3>
+                    <p>Pick from hundreds of Verilog challenges, from basic combinational logic to advanced sequential circuits and testbenches.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">⚙</div>
+                    <h3>Write &amp; Simulate</h3>
+                    <p>Code directly in our browser-based IDE. Run simulations instantly and visualize waveforms to verify your design.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">✦</div>
+                    <h3>Get AI Feedback</h3>
+                    <p>Receive detailed explanations, optimization tips, and personalized guidance from an AI tutor that understands your code.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="demo-grid">
+                <div class="demo-content">
+                    <div class="eyebrow">Try It Now</div>
+                    <h2>Experience AI-powered<br>Verilog practice</h2>
+                    <p>See how VerilogLab helps you learn faster with intelligent feedback and interactive exercises. Start with a simple full adder and work your way up.</p>
+                    <ul class="demo-list">
+                        <li><span>✓</span> Real-time syntax checking</li>
+                        <li><span>✓</span> Instant simulation results</li>
+                        <li><span>✓</span> Personalized AI explanations</li>
+                        <li><span>✓</span> Progress tracking &amp; achievements</li>
+                    </ul>
+                    <a href="#" class="btn-primary btn-large">Try the Demo <span>→</span></a>
+                </div>
+                <div class="demo-visual">
+                    <div class="terminal-window">
+                        <div class="window-bar">
+                            <div class="dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="window-title">veriloglab — exercise 042</span>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line"><span class="prompt">$</span> veriloglab run full_adder.v</div>
+                            <div class="terminal-line dim">Compiling design...</div>
+                            <div class="terminal-line success">✓ Compilation successful</div>
+                            <div class="terminal-line dim">Running testbench...</div>
+                            <div class="terminal-line success">✓ All 8 test cases passed</div>
+                            <div class="terminal-line ai">✦ AI Tutor: Excellent work! Your full adder is functionally correct. Consider using a carry-lookahead structure for better performance in larger designs.</div>
+                            <div class="terminal-line"><span class="prompt">$</span> <span class="cursor"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <div class="cta-card">
+                <div>
+                    <h2>Start learning Verilog today</h2>
+                    <p>Join thousands of students and engineers mastering hardware design with AI-powered guidance.</p>
+                </div>
+                <div class="cta-actions">
+                    <a href="#" class="btn-primary btn-large">Create Free Account <span>→</span></a>
+                    <span class="cta-note">No credit card required</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="pricing">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">⌁</span>
+                        <span class="logo-text">Verilog<span>Lab</span></span>
+                    </div>
+                    <p>The AI-powered platform for learning Verilog and digital design through hands-on practice.</p>
+                    <div class="socials">
+                        <a href="#" aria-label="GitHub">GH</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="Discord">DC</a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="#">Exercises</a>
+                    <a href="#">Simulator</a>
+                    <a href="#">AI Tutor</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="#">Verilog Guide</a>
+                    <a href="#">Digital Logic Basics</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Documentation</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2024 VerilogLab. All rights reserved.</span>
+                <span>Made with ♥ for hardware engineers</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
