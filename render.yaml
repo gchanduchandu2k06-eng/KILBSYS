@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: kilbsys-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: KILBSYS_AI_MODEL
+        value: gemini-2.5-flash
